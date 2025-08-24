@@ -28,13 +28,13 @@ class ClipboardWatcher: ObservableObject {
         guard pb.changeCount != lastChangeCount else { return }
         lastChangeCount = pb.changeCount
         
-        if let str = pb.string(forType: .string) {
-            addItem(.text(str))
-        } else if let rtf = pb.data(forType: .rtf),
+        if let rtf = pb.data(forType: .rtf),
                   let attr = try? NSAttributedString(data: rtf,
                                                     options: [.documentType: NSAttributedString.DocumentType.rtf],
                                                     documentAttributes: nil) {
             addItem(.rtf(attr))
+        } else if let str = pb.string(forType: .string) {
+            addItem(.text(str))
         } else if let tiff = pb.data(forType: .tiff),
                   let img = NSImage(data: tiff) {
             addItem(.image(img))
