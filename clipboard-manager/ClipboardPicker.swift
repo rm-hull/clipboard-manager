@@ -11,6 +11,7 @@ struct ClipboardPicker: View {
     @ObservedObject var watcher: ClipboardWatcher
     @Environment(\.dismiss) var dismiss
     @State private var selected: ClipboardItem.ID?
+    var imgWidth: CGFloat = 200
     
     var body: some View {
         List(watcher.history, id: \.id, selection: $selected) { item in
@@ -49,7 +50,7 @@ struct ClipboardPicker: View {
         case .image(let img):
             Image(nsImage: img)
                 .resizable()
-                .frame(width: 40, height: 30)
+                .frame(width: imgWidth, height: imgWidth * img.size.height / img.size.width)
         }
     }
     

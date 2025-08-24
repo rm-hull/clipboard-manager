@@ -9,7 +9,7 @@ import Cocoa
 import SwiftUI
 
 //@main
-class AppDelegate: NSObject, NSApplicationDelegate {
+class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
     var watcher = ClipboardWatcher()
     var window: NSWindow?
     var statusItem: NSStatusItem?
@@ -45,7 +45,17 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         NSApp.terminate(nil)
     }
 
+    @objc func windowWillClose(_ notification: Notification) {
+        window = nil
+    }
+    
     func showPopup() {
+        if let window = self.window {
+            window.makeKeyAndOrderFront(nil)
+            NSApp.activate(ignoringOtherApps: true)
+            return
+        }
+
         let picker = ClipboardPicker(watcher: watcher)
         let vc = NSHostingController(rootView: picker)
         let w = NSWindow(contentViewController: vc)
@@ -53,21 +63,10 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         w.styleMask = [.titled, .closable]
         w.level = .floating   // make sure it appears above apps
         w.center()
+        w.delegate = self
         w.makeKeyAndOrderFront(nil)
 
         NSApp.activate(ignoringOtherApps: true)
         self.window = w
-    }
-}
-
-extension String {
-    var fourCharCodeValue: FourCharCode {
-        var result: FourCharCode = 0
-        if let data = self.data(using: String.Encoding.macOSRoman) {
-            for (i, b) in data.enumerated() {
-                result += FourCharCode(b) << ((3 - i) * 8)
-            }
-        }
-        return result
     }
 }

@@ -10,6 +10,7 @@ import AppKit
 class ClipboardWatcher: ObservableObject {
     @Published var history: [ClipboardItem] = []
     
+    private let maxHistoryCount = 10
     private let pb = NSPasteboard.general
     private var lastChangeCount = NSPasteboard.general.changeCount
     private var timer: Timer?
@@ -28,13 +29,14 @@ class ClipboardWatcher: ObservableObject {
         guard pb.changeCount != lastChangeCount else { return }
         lastChangeCount = pb.changeCount
         
-        if let rtf = pb.data(forType: .rtf),
-                  let attr = try? NSAttributedString(data: rtf,
-                                                    options: [.documentType: NSAttributedString.DocumentType.rtf],
-                                                    documentAttributes: nil) {
-            addItem(.rtf(attr))
-        } else if let str = pb.string(forType: .string) {
+
+        if let str = pb.string(forType: .string) {
             addItem(.text(str))
+        } else if let rtf = pb.data(forType: .rtf),
+                      let attr = try? NSAttributedString(data: rtf,
+                                                        options: [.documentType: NSAttributedString.DocumentType.rtf],
+                                                        documentAttributes: nil) {
+                addItem(.rtf(attr))
         } else if let tiff = pb.data(forType: .tiff),
                   let img = NSImage(data: tiff) {
             addItem(.image(img))
@@ -42,7 +44,10 @@ class ClipboardWatcher: ObservableObject {
     }
     
     private func addItem(_ content: ClipboardContent) {
+        history.removeAll { $0.content == content }
         history.insert(ClipboardItem(content: content, timestamp: Date()), at: 0)
-        if history.count > 5 { history.removeLast() }
+        if history.count > maxHistoryCount {
+            history.removeLast()
+        }
     }
 }
