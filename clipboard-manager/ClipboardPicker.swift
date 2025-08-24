@@ -39,17 +39,17 @@ struct ClipboardPicker: View {
         }
     }
     
+    @ViewBuilder
     func preview(for content: ClipboardContent) -> some View {
         switch content {
         case .text(let s):
-            return Text(s).lineLimit(1).eraseToAnyView()
+            Text(s).lineLimit(1)
         case .rtf(let attr):
-            return Text(attr.string).lineLimit(1).italic().eraseToAnyView()
+            Text(attr.string).lineLimit(1).italic()
         case .image(let img):
-            return Image(nsImage: img)
+            Image(nsImage: img)
                 .resizable()
                 .frame(width: 40, height: 30)
-                .eraseToAnyView()
         }
     }
     
