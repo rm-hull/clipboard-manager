@@ -44,7 +44,7 @@ struct ClipboardPicker: View {
     func preview(for content: ClipboardContent) -> some View {
         switch content {
         case .text(let s):
-            Text(s).lineLimit(1)
+            Text(s).lineLimit(3)
         case .rtf(let attr):
             Text(attr.string).lineLimit(1).italic()
         case .image(let img):

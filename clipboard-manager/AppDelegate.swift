@@ -60,6 +60,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
         let vc = NSHostingController(rootView: picker)
         let w = NSWindow(contentViewController: vc)
 
+        w.title = "Clipboard Manager"
         w.styleMask = [.titled, .closable]
         w.level = .floating   // make sure it appears above apps
         w.center()
